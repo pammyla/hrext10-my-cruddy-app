@@ -28,7 +28,8 @@ var showDatabaseContents = function() {
 
   for (var i = 0; i < window.localStorage.length; i++) {
     var key = window.localStorage.key(i);
-    $('tbody').append(`<tr><td>${key}</td><td>${window.localStorage.getItem(key)}</td></tr>`)
+    var parsedValue = JSON.parse(window.localStorage.getItem(key));
+    $('tbody').append(`<tr><td>${key}</td><td>${parsedValue.Status}</td><td>${parsedValue.Rating}</td><td>${parsedValue.Episodes}</td></tr>`);
   }
 }
 
@@ -52,7 +53,14 @@ var resetInputs = function() {
 $(document).ready(function() {
   showDatabaseContents();
 
+  $('#animeTable').DataTable();
+
   $('.create').click(function() {
+    var regex = /{"Status": ".+", "Rating": \d+, "Episodes": \d+}/gm
+    if (getValueInput().match(regex) === null) {
+      alert('Attributes must be in this format: \n{"Status": "Completed", "Rating": 10, "Episodes": 26}')
+      return "Please enter attributes in correct format ";
+    }
     if (getKeyInput() !== '' && getValueInput() !== '') {
       if (keyExists(getKeyInput())) {
         if(confirm('key already exists in database, do you want to update instead?')) {
